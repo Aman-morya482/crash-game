@@ -1,0 +1,13 @@
+@import "tailwindcss";
+
+.loading{
+    animation: move 5s ease-in;
+}
+@keyframes move {
+    0%{
+        right: -100%;
+    }
+    100%{
+        right: 0%;
+    }
+}
