@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const Game = require("../models/Game");
+const Game = require("../models/crashPoints");
+const crashPoints = require('../models/crashPoints');
 
 function generateCrashPoint(){
     const r = Math.random();
@@ -39,6 +40,28 @@ router.get('/latest', async(req,res)=>{
     }catch(error){
         console.error("latest fetch error",error);
         res.status(500).json({error:"failed to fetch latest game"})
+    }
+})
+
+router.post('/add-crash-points', async(req,res)=>{
+    try{
+
+    }
+    catch(error){
+        console.error("add crashPoint error",error);
+        res.status(500).json({error: "failed to add crash point"})
+    }
+})
+
+router.get('/get-crash-points', async(req,res)=>{
+    try{
+        const crashes = await Game.find();
+        if(!crashes) return;
+
+        res.json({crashPoints:crashes.crashPoint});
+    }catch(error){
+        console.error("fetch crash points error", error);
+        res.status(500).json({error: "failed to fetch crash points"})
     }
 })
 
