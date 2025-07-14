@@ -2,11 +2,8 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
     amount : null,
-    bet : null,
-    multiplier: 1.0,
-    crashPoint: null,
-    isCrashed: false,
-    isPlaying: false,
+    crashArray : [],
+    betArray : [],
 }
 
 const gameSlice = createSlice({
@@ -16,20 +13,15 @@ const gameSlice = createSlice({
         setAmount:(state,action)=>{
             state.amount = action.payload
         },
-        setBet:(state,action)=>{
-            state.amount = action.payload
+        addCrashPoint:(state,action)=>{
+            const crash = action.payload;
+            const updated = [...state.crashArray];
+            if(updated.length >= 50) updated.shift();
+            updated.push(crash);
+            state.crashArray = updated;
         },
-        setMultiplier:(state,action)=>{
-            state.multiplier = action.payload
-        },
-        setCrashPoint:(state,action)=>{
-            state.crashPoint = action.payload
-        },
-        setIsCrashed:(state,action)=>{
-            state.crashPoint = action.payload
-        },
-        setIsPlaying:(state,action)=>{
-            state.crashPoint = action.payload
+        addBet:(state,action)=>{
+          state.betArray.push(action.payload);  
         }
     }
 })
