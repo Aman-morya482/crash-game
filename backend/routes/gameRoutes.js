@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const Game = require("../models/crashPoints");
 const crashPoints = require('../models/crashPoints');
 
 function generateCrashPoint(){
@@ -21,7 +20,7 @@ router.post('/start', async(req,res)=>{
     try{
         const crashPoint = generateCrashPoint()
         
-        const newGame = new Game({crashPoint})
+        // const newGame = new Game({crashPoint})
         await newGame.save();
         
         res.status(201).json({crashPoint});
@@ -33,8 +32,8 @@ router.post('/start', async(req,res)=>{
 
 router.get('/latest', async(req,res)=>{
     try{
-        const latestGame = await Game.findOne().sort({createdAt:-1});
-        if(!latestGame) return res.status(404).json({error:"No game found"})
+        // const latestGame = await Game.findOne().sort({createdAt:-1});
+        // if(!latestGame) return res.status(404).json({error:"No game found"})
         
         res.json({crashPoint: latestGame.crashPoint})
     }catch(error){
@@ -55,8 +54,8 @@ router.post('/add-crash-points', async(req,res)=>{
 
 router.get('/get-crash-points', async(req,res)=>{
     try{
-        const crashes = await Game.find();
-        if(!crashes) return;
+        // const crashes = await Game.find();
+        // if(!crashes) return;
 
         res.json({crashPoints:crashes.crashPoint});
     }catch(error){
