@@ -5,7 +5,7 @@
 }
 
 .loading{
-    animation: move 5s ease-in;
+    animation: move 10s ease-in;
 }
 @keyframes move {
     0%{

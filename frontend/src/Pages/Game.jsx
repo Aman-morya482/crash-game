@@ -2,12 +2,10 @@ import React, { useEffect, useRef, useState } from 'react'
 import { setCrashPoint } from '../features/game/gameSlice';
 import '../App.css'
 
-import { IoIosRemoveCircle } from "react-icons/io";
-import { IoIosAddCircle } from "react-icons/io";
 import { IoIosRemove } from "react-icons/io";
 import { IoIosAdd } from "react-icons/io";
-import { toast } from "react-toastify"
-
+import { toast } from "react-toastify";
+import Lottie from "lottie-react"
 
 const Game = () => {
 
@@ -29,10 +27,40 @@ const Game = () => {
   const [status, setStatus] = useState('Connecting...');
   const socketRef = useRef(null);
 
+  const [animation, setAnimation] = useState(null);
+  useEffect(() => {
+    fetch("/Loader.json")
+      .then((res) => res.json())
+      .then((data) => setAnimation(data))
+      .catch((err) => console.error("Failed to load animation:", err));
+  }, []);
+
+
+  async function fetchCrashPoints() {
+    try {
+      const res = await fetch('http://localhost:8080/crash-history', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      const data = await res.json();
+      console.log("fetch", data.crashPoints);
+      if (data.success) {
+        setCrashArray(data.crashPoints)
+      }
+    } catch (error) {
+      console.error("fetch crash error", error);
+    }
+  }
+
+  useEffect(() => {
+    fetchCrashPoints();
+  }, [])
 
   useEffect(() => {
     socketRef.current = new WebSocket('ws://localhost:8080');
-    socketRef.current.onerror = (error) => {console.log("ws", error)}
+    socketRef.current.onerror = (error) => { console.log("ws", error) }
 
     socketRef.current.onopen = () => {
       setStatus("Connected");
@@ -42,26 +70,37 @@ const Game = () => {
       const data = JSON.parse(event.data);
 
       if (data.type === 'START') {
-        setStatus('Round Started');
+        setStatus(1);
+        setCrashed(false);
         setMultiplier(1.00);
         setCrashPoint(null);
       }
 
       if (data.type === 'IN_PROGRESS') {
-        setStatus('Game in Progress...')
+        setStatus(2);
         setMultiplier(data.multiplier);
       }
 
       if (data.type === 'CRASH') {
-        setStatus('crashed!')
-        setCrashArray(data.multiplier)
+        setStatus(3)
+        setCrashed(true);
+        setOutCash(false);
+        setPlayedBet(false);
+        setMultiplier(data.multiplier)
+        // fetchCrashPoints();
+      }
+
+      if (data.type === 'HISTORY') {
+        console.log("ws", data.history);
+        setCrashArray(data.history)
       }
 
       if (data.type === "WAITING") {
-        setStatus('data.message');
+        setStatus(4);
+        setCrashed(false);
+        setOutCash(false);
+        setPlayedBet(false);
       }
-
-      console.log(data.type);
     };
 
     socketRef.current.onclose = () => {
@@ -74,110 +113,16 @@ const Game = () => {
 
   }, [])
 
-
-  const fetchCrashPoint = async () => {
-    try {
-
-      const res = await fetch("http://localhost:8080/api/game/get-crash-points", {
-        method: 'GET',
-      })
-      const data = await res.json();
-      // const crashes = data.crashPoint;
-      console.log(data);
-    } catch (error) {
-      console.error("fetch crash error", error)
-    }
-  }
-
-  useEffect(() => {
-    fetchCrashPoint();
-  }, [])
-
-  const startLoading = () => {
-    setShowTimer(true);
-    setCrashed(false);
-    setCrashPoint(null);
-    setMultiplier(1.00);
-    setTimeout(() => {
-      setShowTimer(false);
-      startGame();
-    }, 8000)
-  }
-
-  const startGame = async () => {
-    try {
-      const res = await fetch('http://localhost:8080/api/game/start', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        }
-      })
-      const data = await res.json();
-      setCrashPoint(data.crashPoint);
-      setMultiplier(1.00);
-      startFlite(data.crashPoint);
-      console.log(data.crashPoint);
-    } catch (error) {
-      console.error("Failed to start", error);
-    }
-  }
-
-  const startFlite = (crashPoint) => {
-    let startTime = Date.now();
-    setCrashed(false);
-
-    const tick = () => {
-      const elapsed = (Date.now() - startTime) / 1000; // seconds
-      const multiplierNow = parseFloat((1 + elapsed * 0.12).toFixed(2));
-
-      setMultiplier(multiplierNow);
-
-      if (multiplierNow >= crashPoint) {
-        console.log("💥 Crashed at:", multiplierNow);
-
-        if (playedBetRef.current) {
-          console.log("❌ Lost:", bet);
-          setAmount((prev) => prev - bet);
-        }
-
-        setCrashed(true);
-        setCrashArray((prev) => {
-          const updated = [...prev];
-          if (updated.length >= 50) updated.shift();
-          updated.push(crashPoint);
-          return updated;
-        });
-
-        setPlayedBet(false);
-        setOutCash(false);
-
-        // Restart game after 3 seconds
-        setTimeout(() => {
-          startLoading();
-          setMultiplier(1.00);
-        }, 3000);
-      } else {
-        requestAnimationFrame(tick); // 🔁 Keep ticking, even in background tab
-      }
-    };
-
-    requestAnimationFrame(tick);
-  };
-
-
-  // useEffect(() => {
-  //   startLoading();
-  // }, [])
-
   const makeBet = () => {
-    if (playedBet && showTimer) {
+    if (playedBet && status == 4) {
       setPlayedBet(false);
       setAmount(pre => pre + bet);
       return;
     }
-    if (amount < bet) return toast.error("Insufficient Amount")
+    if (!playedBet && amount < bet) return toast.error("Insufficient Amount")
 
-    if (!playedBet) {
+    if (!playedBet && status == 4) {
+      if(bet < 10 || bet > 1000) return;
       setPlayedBet(true);
       setOutCash(false);
       setAmount(pre => pre - bet);
@@ -244,15 +189,21 @@ const Game = () => {
           <div className='w-full lg:w-[75vw] bg-black/70 rounded-2xl p-2 flex flex-col'>
             <div className='flex items-center gap-3 justify-end overflow-hidden'>
               {
-                crashArray.map((item, index) => {
+                crashArray.map((e) => {
                   return (
-                    <p key={index} className={`font-semibold bg-gray-950 text-sm px-3 py-1 rounded-full ${item < 2.00 ? "text-red-500" : item < 10 ? "text-blue-500" : "text-green-500"}`}>{item.toFixed(2)}x</p>
+                    <p key={e._id} className={`font-semibold bg-gray-950 text-sm px-3 py-1 rounded-full ${e.value < 2.00 ? "text-red-500" : e.value < 10 ? "text-blue-500" : "text-green-500"}`}>{Number(e.value).toFixed(2)}x</p>
                   )
                 })
               }
             </div>
             <div className='flex justify-center items-center my-3 h-[50vh] md:h-[60vh] xl:h-[65vh] border border-gray-500 rounded-3xl'>
-              {!showTimer ? <p className='text-5xl'>{multiplier.toFixed(2)}x</p> : <div className='flex flex-col justify-center items-center gap-3'> <p className='text-2xl'>Start in</p> <div className='w-[200px] h-[5px] bg-red-500 rounded-2xl relative overflow-hidden'><div className='loading absolute w-[200px] h-[5px] bg-white'></div></div></div>}
+              {!status == 1 || status == 2 ? <p className='text-5xl'>{multiplier.toFixed(2)}x</p> :
+                status == 4 ? <div className='flex flex-col justify-center items-center gap-3'> <p className='text-2xl'>Start in</p> <div className='w-[200px] h-[5px] bg-red-500 rounded-2xl relative overflow-hidden'><div className='loading absolute w-[200px] h-[5px] bg-white'></div></div></div> :
+                  status === 3 ? <p className='text-5xl text-red-600'>{multiplier.toFixed(2)}x</p> :
+                    <div style={{ width: 200, height: 200 }}>
+                      <Lottie animationData={animation} loop={true} />
+                    </div>
+              }
             </div>
 
             <div className='flex flex-col md:flex-row items-center gap-2'>
