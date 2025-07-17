@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { setCrashPoint } from '../features/game/gameSlice';
 import '../App.css'
+
+import { incrementAmount, decrementAmount } from '../features/game/gameSlice';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { IoIosRemove } from "react-icons/io";
 import { IoIosAdd } from "react-icons/io";
@@ -9,21 +11,19 @@ import Lottie from "lottie-react"
 
 const Game = () => {
 
-  const [amount, setAmount] = useState(100);
+  const dispatch = useDispatch();
+  const amount = useSelector((state) => state.game.amount);
+
+  // const [amount, setAmount] = useState(100);
   const [bet, setBet] = useState(10);
   const [bet2, setBet2] = useState(10);
   const [multiplier, setMultiplier] = useState(1.00);
-  const [multi, setMulti] = useState(1.00);
-  const [timer, setTimer] = useState(10.00);
-  const [showTimer, setShowTimer] = useState(true);
   const [crashPoint, setCrashPoint] = useState(null);
   const [crashed, setCrashed] = useState(false);
   const [crashArray, setCrashArray] = useState([]);
   const [betArray, setBetArray] = useState([]);
   const [playedBet, setPlayedBet] = useState(false);
   const [outCash, setOutCash] = useState(false);
-  const intervalRef = useRef(null);
-  const playedBetRef = useRef(false);
   const [status, setStatus] = useState('Connecting...');
   const socketRef = useRef(null);
 
@@ -45,7 +45,6 @@ const Game = () => {
         }
       })
       const data = await res.json();
-      console.log("fetch", data.crashPoints);
       if (data.success) {
         setCrashArray(data.crashPoints)
       }
@@ -91,7 +90,6 @@ const Game = () => {
       }
 
       if (data.type === 'HISTORY') {
-        console.log("ws", data.history);
         setCrashArray(data.history)
       }
 
@@ -116,16 +114,16 @@ const Game = () => {
   const makeBet = () => {
     if (playedBet && status == 4) {
       setPlayedBet(false);
-      setAmount(pre => pre + bet);
+      dispatch(incrementAmount(bet));
       return;
     }
-    if (!playedBet && amount < bet) return toast.error("Insufficient Amount")
+    if (!playedBet && amount < bet && status == 4) return toast.error("Insufficient Amount")
 
     if (!playedBet && status == 4) {
-      if(bet < 10 || bet > 1000) return;
+      if (bet < 10 || bet > 1000) return;
       setPlayedBet(true);
       setOutCash(false);
-      setAmount(pre => pre - bet);
+      dispatch(decrementAmount(bet));
     }
     else {
       cashout();
@@ -135,7 +133,7 @@ const Game = () => {
   const cashout = () => {
     if (!outCash && playedBet) {
       const profit = bet * multiplier;
-      setAmount(pre => pre + profit)
+      dispatch(incrementAmount(profit));
       if (multiplier > 1.00) { console.log("cashout with", profit, "rupees") }
       setBetArray(pre => [{ bet, multiplier, profit }, ...pre])
       setPlayedBet(false);
@@ -191,7 +189,7 @@ const Game = () => {
               {
                 crashArray.map((e) => {
                   return (
-                    <p key={e._id} className={`font-semibold bg-gray-950 text-sm px-3 py-1 rounded-full ${e.value < 2.00 ? "text-red-500" : e.value < 10 ? "text-blue-500" : "text-green-500"}`}>{Number(e.value).toFixed(2)}x</p>
+                    <p key={e._id} className={`font-semibold bg-gray-900 text-sm px-3 rounded-full ${e.value < 2.00 ? "text-red-500" : e.value < 10 ? "text-blue-500" : "text-green-500"}`}>{Number(e.value).toFixed(2)}x</p>
                   )
                 })
               }
@@ -226,7 +224,7 @@ const Game = () => {
                       <p onClick={() => setBet(1000)} className='active:scale-95 cursor-pointer hover:bg-gray-600 bg-black/40 text-center px-2 rounded-xl'>1000</p>
                     </div>
                   </div>
-                  <button disabled={!showTimer && !playedBet} onClick={() => makeBet()} className={`${playedBet ? "bg-yellow-400" : "bg-green-600"} cursor-pointer hover:ring-2 ring-green-500 active:scale-95 border rounded-3xl py-4 px-18 text-2xl font-semibold`}><h1>BET</h1><h2>{bet.toFixed(2)}</h2></button>
+                  <button disabled={!status == 4} onClick={() => makeBet()} className={`${playedBet ? "bg-yellow-400" : "bg-green-600"} cursor-pointer hover:ring-2 ring-green-500 active:scale-95 border rounded-3xl py-4 px-18 text-2xl font-semibold`}><h1>BET</h1><h2>{bet.toFixed(2)}</h2></button>
                 </div>
               </div>
               <div className='flex flex-col gap-6 justify-center items-center bg-gray-600/40 rounded-2xl w-full px-4 py-2'>

@@ -77,8 +77,8 @@ async function gameLoop() {
   broadcastToClients({ type: 'START', message: 'Round started!' });
 
   const interval = setInterval(async () => {
-    multiplier = +(multiplier + 0.01).toFixed(2);
-
+    let increment = multiplier > 30 ? 0.04 : multiplier > 10 ? 0.03 : multiplier > 5 ? 0.02 : 0.01;
+    multiplier = +(multiplier + increment).toFixed(2);
     broadcastToClients({ type: 'IN_PROGRESS', multiplier });
 
     if (multiplier >= crashAt) {
