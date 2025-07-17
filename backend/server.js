@@ -42,7 +42,7 @@ function generateCrashPoint() {
   const r = Math.random();
   if (r < 0.7) return +(Math.random() * 1 + 1).toFixed(2);
   else if (r < 0.9) return +(Math.random() * 3 + 2).toFixed(2);
-  else if (r < 0.98) return +(Math.random() * 5 + 5).toFixed(2);
+  else if (r < 0.95) return +(Math.random() * 5 + 5).toFixed(2);
   else return +(Math.random() * 40 + 10).toFixed(2);
 }
 

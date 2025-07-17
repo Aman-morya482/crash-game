@@ -4,8 +4,7 @@ import '../App.css'
 import { incrementAmount, decrementAmount } from '../features/game/gameSlice';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { IoIosRemove } from "react-icons/io";
-import { IoIosAdd } from "react-icons/io";
+import { IoIosRemove, IoIosArrowDown, IoIosAdd} from "react-icons/io";
 import { toast } from "react-toastify";
 import Lottie from "lottie-react"
 
@@ -19,6 +18,7 @@ const Game = () => {
   const [bet2, setBet2] = useState(10);
   const [multiplier, setMultiplier] = useState(1.00);
   const [crashPoint, setCrashPoint] = useState(null);
+  const [showCrashes,setShowCrashes] = useState(false);
   const [crashed, setCrashed] = useState(false);
   const [crashArray, setCrashArray] = useState([]);
   const [betArray, setBetArray] = useState([]);
@@ -185,7 +185,8 @@ const Game = () => {
           </div>
 
           <div className='w-full lg:w-[75vw] bg-black/70 rounded-2xl p-2 flex flex-col'>
-            <div className='flex items-center gap-3 justify-end overflow-hidden'>
+          <div className='flex gap-5'>
+            <div className='flex items-center gap-5 justify-end overflow-hidden'>
               {
                 crashArray.map((e) => {
                   return (
@@ -194,7 +195,24 @@ const Game = () => {
                 })
               }
             </div>
-            <div className='flex justify-center items-center my-3 h-[50vh] md:h-[60vh] xl:h-[65vh] border border-gray-500 rounded-3xl'>
+            <div onClick={()=>setShowCrashes(!showCrashes)} className={`cursor-pointer bg-gray-900 px-2 py-1 rounded-full ${showCrashes ? 'rotate-180' : 'rotate-0'}`}><IoIosArrowDown size={16}/></div>
+            </div>
+
+            <div className='relative flex flex-col my-3 h-[50vh] md:h-[60vh] xl:h-[65vh] border border-gray-500 rounded-3xl'>
+              { showCrashes &&
+                <div className='h-[40%] w-full absolute bg-gray-800 rounded-3xl px-6 py-2'>
+              <div className='flex flex-wrap gap-x-6 gap-y-3'>
+              {
+                crashArray.slice().reverse().map((e) => {
+                  return (
+                    <p key={e._id} className={`font-semibold bg-gray-900 text-sm px-3 rounded-full ${e.value < 2.00 ? "text-red-500" : e.value < 10 ? "text-blue-500" : "text-green-500"}`}>{Number(e.value).toFixed(2)}x</p>
+                  )
+                })
+              }
+              </div>
+            </div>
+            }
+            <div className='flex justify-center items-center h-full'>
               {!status == 1 || status == 2 ? <p className='text-5xl'>{multiplier.toFixed(2)}x</p> :
                 status == 4 ? <div className='flex flex-col justify-center items-center gap-3'> <p className='text-2xl'>Start in</p> <div className='w-[200px] h-[5px] bg-red-500 rounded-2xl relative overflow-hidden'><div className='loading absolute w-[200px] h-[5px] bg-white'></div></div></div> :
                   status === 3 ? <p className='text-5xl text-red-600'>{multiplier.toFixed(2)}x</p> :
@@ -202,6 +220,7 @@ const Game = () => {
                       <Lottie animationData={animation} loop={true} />
                     </div>
               }
+            </div>
             </div>
 
             <div className='flex flex-col md:flex-row items-center gap-2'>
