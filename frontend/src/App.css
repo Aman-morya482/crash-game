@@ -15,3 +15,23 @@
         right: 0%;
     }
 }
+
+/* Target the scrollable container */
+.bet-history {
+  scrollbar-width: thin;           /* Firefox */
+  scrollbar-color: rgb(0, 0, 0) rgb(100, 100, 100);  /* Firefox */
+}
+
+/* For Webkit (Chrome, Edge, Safari) */
+.bet-history::-webkit-scrollbar {
+  width: 4px; /* Narrower scrollbar */
+}
+
+.bet-history::-webkit-scrollbar-track {
+    background: rgb(120, 7, 7);
+}
+
+.bet-history::-webkit-scrollbar-thumb {
+  background-color: rgb(171, 22, 22); /* Scrollbar color */
+  border-radius: 10px;
+}

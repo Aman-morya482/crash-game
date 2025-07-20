@@ -13,9 +13,6 @@ export const store = configureStore({
     },
 });
 
-console.log("loadstate", loadState());
-console.log("after reload", store.getState().game.amount);
-
 store.subscribe(()=>{
     saveState(store.getState().game);
 })

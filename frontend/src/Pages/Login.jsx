@@ -1,73 +1,100 @@
 import React, { useState } from 'react';
+import { motion } from 'framer-motion';
 
 export default function Login() {
     const [formData, setFormData] = useState({
-        email: '',
-        password: ''
+        username: '',
+        phone: '',
+        password: '',
     });
 
-    const [error, setError] = useState(null);
-    const [success, setSuccess] = useState(false);
-
     const handleChange = (e) => {
-        setFormData({
-            ...formData,
+        setFormData(prev => ({
+            ...prev,
             [e.target.name]: e.target.value
-        });
+        }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async(e) => {
         e.preventDefault();
-        setError(null);
-        setSuccess(false);
-
-        // Simulate login logic
-        if (formData.email === 'user@example.com' && formData.password === 'password') {
-            setSuccess(true);
-        } else {
-            setError('Invalid email or password');
+        console.log('Submitted:', formData);
+        
+        try {
+            const res = await fetch('http://localhost:8080/api/login', {
+                method:'POST',
+                headers:{
+                    'Content-Type': 'application/json'
+                },
+                body:JSON.stringify(formData)
+            });
+            const data = await res.json();
+            console.log(data);
+        } catch (error) {
+            console.log(error)
         }
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white p-4">
-            <div className="bg-gray-800 p-8 rounded-2xl shadow-lg w-full max-w-md">
-                <h2 className="text-3xl font-bold mb-6 text-center">Log In</h2>
+        <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
+            <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.4 }}
+                className="bg-gray-800 text-white p-8 rounded-2xl shadow-2xl w-full max-w-md"
+            >
+                <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
-                        <label className="block mb-1 font-medium">Email</label>
+                        <label className="block mb-1 text-sm">Username</label>
                         <input
-                            type="email"
-                            name="email"
-                            value={formData.email}
-                            onChange={handleChange}
+                            type="text"
+                            name="username"
                             required
-                            className="w-full px-4 py-2 rounded-lg bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            value={formData.username}
+                            onChange={handleChange}
+                            className="w-full px-4 py-2 bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                     </div>
                     <div>
-                        <label className="block mb-1 font-medium">Password</label>
+                        <label className="block mb-1 text-sm">Phone Number</label>
+                        <input
+                            type="tel"
+                            name="phone"
+                            pattern="[0-9]{10}"
+                            required
+                            value={formData.phone}
+                            onChange={handleChange}
+                            className="w-full px-4 py-2 bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                    </div>
+                    <div>
+                        <label className="block mb-1 text-sm">Password</label>
                         <input
                             type="password"
                             name="password"
+                            required
                             value={formData.password}
                             onChange={handleChange}
-                            required
-                            className="w-full px-4 py-2 rounded-lg bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            className="w-full px-4 py-2 bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                     </div>
 
-                    {error && <div className="text-red-500 text-sm">{error}</div>}
-                    {success && <div className="text-green-500 text-sm">Login successful!</div>}
-
-                    <button
+                    <motion.button
+                        whileHover={{ scale: 1.03 }}
+                        whileTap={{ scale: 0.97 }}
                         type="submit"
-                        className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-lg transition duration-300"
+                        className="w-full py-2 mt-4 bg-blue-600 hover:bg-blue-700 transition-all rounded-lg font-semibold"
                     >
-                        Log In
-                    </button>
+                        Submit
+                    </motion.button>
+
+                    <div className="text-right mt-2 text-sm">
+                        <a href="#" className="text-blue-400 hover:underline">
+                            Forgot password?
+                        </a>
+                    </div>
                 </form>
-            </div>
+            </motion.div>
         </div>
     );
 }

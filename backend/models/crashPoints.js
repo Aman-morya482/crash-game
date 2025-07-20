@@ -1,14 +1,14 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const gameSchema = mongoose.Schema({
-    value:{
+    value: {
         type: Number,
         required: true,
     },
-    createdAt:{
+    createdAt: {
         type: Date,
-        default:Date.now,
+        default: Date.now,
     }
 })
 
-module.exports = mongoose.model('CrashPoints', gameSchema)
+export const CrashPoint = mongoose.model('CrashPoint', gameSchema)

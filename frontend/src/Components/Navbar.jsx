@@ -21,6 +21,7 @@ export default function Navbar() {
                             <NavLink to="/" className={navLinkClass}>Home</NavLink>
                             <NavLink to="/game" className={navLinkClass}>Play</NavLink>
                             <NavLink to="/profile" className={navLinkClass}>Profile</NavLink>
+                            <NavLink to="/login" className={navLinkClass}>Login</NavLink>
                         </div>
                         <div className="md:hidden">
                             <button

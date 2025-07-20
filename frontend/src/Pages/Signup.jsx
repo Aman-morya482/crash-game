@@ -1,100 +1,76 @@
 import React, { useState } from 'react';
 
-export default function Signup() {
+const Signup = () => {
     const [formData, setFormData] = useState({
         username: '',
-        email: '',
-        password: '',
-        confirmPassword: ''
+        phone: '',
+        password: ''
     });
 
-    const [error, setError] = useState(null);
-    const [success, setSuccess] = useState(false);
+    const handleChange = (e) =>
+        setFormData({ ...formData, [e.target.name]: e.target.value });
 
-    const handleChange = (e) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value
-        });
-    };
-
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        setError(null);
-        setSuccess(false);
+        try {
+            const res = await fetch('http://localhost:8080/api/signup', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            });
 
-        if (formData.password !== formData.confirmPassword) {
-            setError('Passwords do not match');
-            return;
+            const data = await res.json();
+            if (res.ok) alert('Signup successful!');
+            else alert(data.message);
+        } catch (err) {
+            console.error(err);
         }
-
-        // Simulate API call
-        setTimeout(() => {
-            setSuccess(true);
-        }, 1000);
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white p-4">
-            <div className="bg-gray-800 p-8 rounded-2xl shadow-lg w-full max-w-md">
-                <h2 className="text-3xl font-bold mb-6 text-center">Sign Up</h2>
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    <div>
-                        <label className="block mb-1 font-medium">Username</label>
-                        <input
-                            type="text"
-                            name="username"
-                            value={formData.username}
-                            onChange={handleChange}
-                            required
-                            className="w-full px-4 py-2 rounded-lg bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                        />
-                    </div>
-                    <div>
-                        <label className="block mb-1 font-medium">Email</label>
-                        <input
-                            type="email"
-                            name="email"
-                            value={formData.email}
-                            onChange={handleChange}
-                            required
-                            className="w-full px-4 py-2 rounded-lg bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                        />
-                    </div>
-                    <div>
-                        <label className="block mb-1 font-medium">Password</label>
-                        <input
-                            type="password"
-                            name="password"
-                            value={formData.password}
-                            onChange={handleChange}
-                            required
-                            className="w-full px-4 py-2 rounded-lg bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                        />
-                    </div>
-                    <div>
-                        <label className="block mb-1 font-medium">Confirm Password</label>
-                        <input
-                            type="password"
-                            name="confirmPassword"
-                            value={formData.confirmPassword}
-                            onChange={handleChange}
-                            required
-                            className="w-full px-4 py-2 rounded-lg bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                        />
-                    </div>
+        <div className="min-h-screen bg-gray-900 flex items-center justify-center px-4">
+            <form
+                onSubmit={handleSubmit}
+                className="bg-gray-800 p-8 rounded-2xl shadow-lg w-full max-w-md animate-fadeIn"
+            >
+                <h2 className="text-2xl font-bold text-white mb-6 text-center">Signup</h2>
 
-                    {error && <div className="text-red-500 text-sm">{error}</div>}
-                    {success && <div className="text-green-500 text-sm">Account created successfully!</div>}
+                <input
+                    type="text"
+                    name="username"
+                    placeholder="Username"
+                    onChange={handleChange}
+                    className="w-full p-3 mb-4 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-400"
+                    required
+                />
 
-                    <button
-                        type="submit"
-                        className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-lg transition duration-300"
-                    >
-                        Create Account
-                    </button>
-                </form>
-            </div>
+                <input
+                    type="text"
+                    name="phone"
+                    placeholder="Phone Number"
+                    onChange={handleChange}
+                    className="w-full p-3 mb-4 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-400"
+                    required
+                />
+
+                <input
+                    type="password"
+                    name="password"
+                    placeholder="Password"
+                    onChange={handleChange}
+                    className="w-full p-3 mb-6 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-400"
+                    required
+                />
+
+                <button
+                    type="submit"
+                    className="w-full bg-teal-500 hover:bg-teal-400 text-white font-semibold py-3 rounded-lg transition duration-300"
+                >
+                    Create Account
+                </button>
+            </form>
         </div>
     );
-}
+};
+
+export default Signup;
