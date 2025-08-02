@@ -1,18 +1,10 @@
 import { configureStore } from "@reduxjs/toolkit";
 import gameReducer from '../features/game/gameSlice';
-import { loadState,saveState } from "../utils/localStorage";
-
-const persistedState = loadState();
+import userReducer from '../features/game/userSlice'
+// import { loadState,saveState } from "../utils/localStorage";
 
 export const store = configureStore({
-    reducer:{
-        game:gameReducer,
-    },
-    preloadedState:{
-        game: persistedState || {amount : 0},
+    reducer: {
+        game: userReducer,
     },
 });
-
-store.subscribe(()=>{
-    saveState(store.getState().game);
-})

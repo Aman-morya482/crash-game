@@ -1,27 +1,33 @@
 import React, { useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 
 export default function Navbar() {
+    const navigate = useNavigate();
     const [isOpen, setIsOpen] = useState(false);
 
     const navLinkClass = ({ isActive }) =>
         isActive
-            ? 'text-indigo-400 font-semibold'
-            : 'hover:text-indigo-400 transition';
+            ? 'text-indigo-400 font-semibold px-2 py-1'
+            : 'hover:text-indigo-400 transition px-2 py-1';
 
+    const handleLogout = () => {
+        localStorage.removeItem("user");
+        localStorage.removeItem("token");
+        navigate('/login');
+    }
     return (
         <div className='grid grid-cols-1 place-items-center'>
-            <nav className="bg-gray-900 text-white shadow-md w-full max-w-[1800px]">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 h-[10vh]">
-                    <div className="flex justify-between h-16 items-center">
-                        <div className="flex items-center space-x-2">
+            <nav className="z-100 absolute top-0 bg-neutral-950 text-white shadow-md w-full max-w-[1800px]">
+                <div className="w-full px-4 sm:px-6 lg:px-10 py-4">
+                    <div className="flex justify-between items-center">
+                        <div>
                             <span className="text-indigo-500 text-2xl font-bold">🚀 CRASH GAME</span>
                         </div>
                         <div className="hidden md:flex space-x-4">
                             <NavLink to="/" className={navLinkClass}>Home</NavLink>
-                            <NavLink to="/game" className={navLinkClass}>Play</NavLink>
+                            <NavLink to="/rewards" className={navLinkClass}>Rewards</NavLink>
                             <NavLink to="/profile" className={navLinkClass}>Profile</NavLink>
-                            <NavLink to="/login" className={navLinkClass}>Login</NavLink>
+                            <button onClick={() => { handleLogout() }} className='bg-red-500 cursor-pointer px-2 py-1 rounded-lg'>Logout</button>
                         </div>
                         <div className="md:hidden">
                             <button
@@ -47,11 +53,11 @@ export default function Navbar() {
                 </div>
 
                 {isOpen && (
-                    <div className="md:hidden bg-gray-800 px-4 pt-2 pb-4 space-y-1">
+                    <div className="md:hidden bg-gray-800 px-2 pt-2 pb-4 text-xl flex justify-center items-center gap-4">
                         <NavLink to="/" className={navLinkClass}>Home</NavLink>
-                        <NavLink to="/game" className={navLinkClass}>Play</NavLink>
-                        <NavLink to="/leaderboard" className={navLinkClass}>Leaderboard</NavLink>
+                        <NavLink to="/rewards" className={navLinkClass}>Rewards</NavLink>
                         <NavLink to="/profile" className={navLinkClass}>Profile</NavLink>
+                        <button onClick={() => { handleLogout() }} className='text-red-600 cursor-pointerrounded-lg'>Logout</button>
                     </div>
                 )}
             </nav>

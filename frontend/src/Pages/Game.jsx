@@ -1,17 +1,34 @@
 import React, { useEffect, useRef, useState } from 'react'
 import '../App.css'
+import { useNavigate } from 'react-router-dom';
 
 import { incrementAmount, decrementAmount } from '../features/game/gameSlice';
 import { useDispatch, useSelector } from 'react-redux';
+import { updateAmountInDB } from '../utils/AmountInDB';
+import { updateExpInDB } from '../utils/AmountInDB';
+import { updateCrashInDB } from '../utils/CrashInDB.js';
+
+import { BetHistory } from '../Components/BetHistory';
 
 import { IoIosRemove, IoIosArrowDown, IoIosAdd, IoIosMenu } from "react-icons/io";
 import { toast } from "react-toastify";
 import Lottie from "lottie-react"
+import { addExp, decExp } from '../features/game/userSlice';
 
 const Game = () => {
+  
+  const navigate = useNavigate();
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (!user) {
+      navigate("/login");
+    }
+  }, [])
 
   const dispatch = useDispatch();
+  // const amount = 100;
   const amount = useSelector((state) => state.game.amount);
+  const user = useSelector((state) => state.game.user);
 
   const [bet, setBet] = useState(10);
   const [bet2, setBet2] = useState(10);
@@ -32,6 +49,10 @@ const Game = () => {
   const playedBetRef2 = useRef(null);
   const betRef = useRef(null);
   const betRef2 = useRef(null);
+
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef(null);
+  const [betOpen, setBetOpen] = useState(false);
 
   const [animation, setAnimation] = useState(null);
   useEffect(() => {
@@ -84,7 +105,6 @@ const Game = () => {
     socketRef.current.onmessage = (event) => {
       const data = JSON.parse(event.data);
 
-      console.log(data);
       if (data.type === 'START') {
         setStatus(1);
         setCrashed(false);
@@ -104,12 +124,17 @@ const Game = () => {
 
       if (data.type === 'CRASH') {
         if (playedBetRef.current) {
-          const profit = "--.--";
+          const profit = 0;
           setBetArray(pre => [{ bet: betRef.current, multiplier: data.multiplier, profit }, ...pre]);
+          updateCrashInDB(betRef.current, data.multiplier, profit)
         }
         if (playedBetRef2.current) {
-          const profit = "--.--";
+          const profit = 0;
+          updateCrashInDB(betRef2.current, data.multiplier, profit)
           setBetArray(pre => [{ bet: betRef2.current, multiplier: data.multiplier, profit }, ...pre]);
+        }
+        if((playedBetRef.current && !outCash) || (playedBetRef2.current && !outCash2)){
+          toast.error("Crashed")
         }
         setStatus(3)
         setCrashed(true);
@@ -118,7 +143,6 @@ const Game = () => {
         setOutCash2(false);
         setPlayedBet2(false);
         setMultiplier(data.multiplier)
-
       }
 
       if (data.type === 'HISTORY') {
@@ -149,6 +173,9 @@ const Game = () => {
     if (playedBet && status == 4) {
       setPlayedBet(false);
       dispatch(incrementAmount(bet));
+      updateAmountInDB(amount + bet);
+      dispatch(decExp(bet));
+      updateExpInDB(bet, "DEC");
       return;
     }
     if (!playedBet && amount < bet && status == 4) return toast.error("Insufficient Amount")
@@ -158,6 +185,9 @@ const Game = () => {
       setPlayedBet(true);
       setOutCash(false);
       dispatch(decrementAmount(bet));
+      updateAmountInDB(amount - bet);
+      dispatch(addExp(bet));
+      updateExpInDB(bet, "INC");
     }
     else {
       cashout();
@@ -168,8 +198,10 @@ const Game = () => {
     if (!outCash && playedBet) {
       const profit = bet * multiplier;
       dispatch(incrementAmount(profit));
-      if (multiplier > 1.00) { console.log("cashout with", profit, "rupees") }
-      setBetArray(pre => [{ bet, multiplier, profit }, ...pre])
+      updateAmountInDB(amount + profit);
+      if (multiplier > 1.00) { toast.success(`Cashout with ${profit.toFixed(2)}`) }
+      setBetArray(pre => [{ bet, multiplier, profit }, ...pre]);
+      updateCrashInDB(betRef.current, multiplier, profit)
       setPlayedBet(false);
       setOutCash(true);
     }
@@ -190,7 +222,10 @@ const Game = () => {
   const makeBet2 = () => {
     if (playedBet2 && status == 4) {
       setPlayedBet2(false);
-      dispatch(incrementAmount(bet));
+      dispatch(incrementAmount(bet2));
+      updateAmountInDB(amount + bet2);
+      dispatch(decExp(bet2));
+      updateExpInDB(bet2, "DEC");
       return;
     }
     if (!playedBet2 && amount < bet2 && status == 4) return toast.error("Insufficient Amount")
@@ -199,7 +234,10 @@ const Game = () => {
       if (bet2 < 10 || bet2 > 1000) return;
       setPlayedBet2(true);
       setOutCash2(false);
-      dispatch(decrementAmount(bet));
+      dispatch(decrementAmount(bet2));
+      updateAmountInDB(amount - bet2);
+      dispatch(addExp(bet2));
+      updateExpInDB(bet2, "INC");
     }
     else {
       cashout2();
@@ -210,8 +248,10 @@ const Game = () => {
     if (!outCash2 && playedBet2) {
       const profit = bet2 * multiplier;
       dispatch(incrementAmount(profit));
-      if (multiplier > 1.00) { console.log("cashout with", profit, "rupees") }
+      updateAmountInDB(amount + profit);
+      if (multiplier > 1.00) { toast.success(`Cashout with ${profit.toFixed(2)}`) }
       setBetArray(pre => [{ bet, multiplier, profit }, ...pre])
+      updateCrashInDB(betRef2.current, multiplier, profit)
       setPlayedBet2(false);
       setOutCash2(true);
     }
@@ -229,18 +269,44 @@ const Game = () => {
     }
   }
 
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setMenuOpen(false);
+      }
+    }
+    if (menuOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [menuOpen]);
 
 
   return (
     <div className='grid grid-cols-1 place-items-center bg-black/60'>
       <div className='bg-black/80 w-full max-w-[1800px] h-full text-white'>
-        <div className='flex justify-between items-center w-full bg-black/40 px-4 md:px-10 text-xl font-semibold'>
-          <p>🚀 CRASH GAME</p>
+        <div className='relative flex justify-between items-center w-full bg-black/40 px-5 text-xl font-semibold'>
+          <p className='md:px-6'>🚀 CRASH GAME</p>
           <div className='flex gap-4 items-center text-gray-400'>
             <p className='text-green-400 font-bold'>{amount.toFixed(2)} <span className='text-gray-400 text-xs'>INR</span></p>
-            <p className='text-2xl'><IoIosMenu /></p>
+            <p onClick={() => setMenuOpen(!menuOpen)} className='text-2xl cursor-pointer active:scale-90'><IoIosMenu /></p>
           </div>
+
+          {menuOpen &&
+            <div ref={menuRef} className={`absolute right-4 -bottom-37 text-base bg-gray-800 rounded-lg z-10`}>
+              <ul className='px-1 flex flex-col gap-1 py-1'>
+                <li className='py-1 capitalize flex justify-between items-center'><p className='px-2 text-blue-500'>{user.username}</p><p className='text-sm px-2 bg-yellow-500 rounded-full'>XP {user.expPoint}</p></li>
+                <li onClick={() => { setMenuOpen(false); setBetOpen(true) }} className='pr-20 py-1 hover:bg-gray-700 cursor-pointer'><p className='px-2'>My bets</p></li>
+                <li onClick={()=>{toast.info("Introducing soon")}} className='pr-20 py-1 hover:bg-gray-700 cursor-pointer'><p className='px-2'>Sound</p></li>
+                <li onClick={() => { navigate("/") }} className='pr-20 py-1 hover:bg-gray-700 cursor-pointer text-red-500'><p className='px-2'>Exit</p></li>
+              </ul>
+            </div>
+          }
         </div>
+
+        {betOpen && <BetHistory open={setBetOpen} />}
 
         <div className='flex flex-col-reverse lg:flex-row gap-1 mt-1 px-2 min-h-[95vh] mb-3'>
 
@@ -253,7 +319,7 @@ const Game = () => {
               {
                 betArray.map((item, index) => {
                   return (
-                    <div key={index} className="flex justify-between items-center px-4 py-2 mt-2 rounded-md bg-black/50"><p>{item.bet}</p><p className={`border-2 px-4 py-[1.5px] rounded-3xl ${item.multiplier < 2.00 ? "border-red-300 bg-rose-500/80" : item.multiplier < 10.00 ? "border-blue-300 bg-blue-500/50" : "border-green-300 bg-green-500/50"}`}>{`${item.multiplier.toFixed(2)}x`}</p><p>{typeof item.profit === "number" ? item.profit.toFixed(2) : item.profit}</p></div>
+                    <div key={index} className={`flex justify-between items-center px-4 py-2 mt-2 rounded-md bg-black/50 ${item.profit == 0 ? "border-red-300 border" : ""}`}><p>{item.bet}</p><p className={`border-2 px-4 py-[1.5px] rounded-3xl ${item.multiplier < 2.00 ? "border-red-300 bg-rose-500/80" : item.multiplier < 10.00 ? "border-blue-300 bg-blue-500/50" : "border-green-300 bg-green-500/50"}`}>{`${item.multiplier.toFixed(2)}x`}</p><p>{typeof item.profit === "number" ? item.profit.toFixed(2) : item.profit}</p></div>
                   )
                 })
               }
@@ -276,7 +342,7 @@ const Game = () => {
 
             <div className='relative flex flex-col my-2 h-[50vh] md:h-[60vh] xl:h-[65vh] border border-gray-500 rounded-3xl'>
               {showCrashes &&
-                <div className='h-[40%] w-full absolute bg-gray-800 rounded-3xl px-6 py-2'>
+                <div className='w-full absolute bg-gray-800 rounded-3xl px-6 py-2'>
                   <div className='flex flex-wrap gap-x-6 gap-y-3'>
                     {
                       crashArray.slice().reverse().map((e) => {
@@ -290,8 +356,8 @@ const Game = () => {
               }
               <div className='flex justify-center items-center h-full'>
                 {!status == 1 || status == 2 ? <p className='text-5xl'>{multiplier.toFixed(2)}x</p> :
-                  status == 4 ? <div className='flex flex-col justify-center items-center gap-3'> <p className='text-2xl'>Start in</p> <div className='w-[200px] h-[5px] bg-red-500 rounded-2xl relative overflow-hidden'><div className='loading absolute w-[200px] h-[5px] bg-white'></div></div></div> :
-                    status === 3 ? <p className='text-5xl text-red-600'>{multiplier.toFixed(2)}x</p> :
+                  status == 4 ? <div className='flex flex-col justify-center items-center gap-3 z-10'> <p className='text-2xl'>Start in</p> <div className='w-[200px] h-[5px] bg-red-500 rounded-2xl relative overflow-hidden'><div className='loading absolute w-[200px] h-[5px] bg-white'></div></div></div> :
+                    status === 3 ? <p className='text-7xl text-red-600'>{multiplier.toFixed(2)}x</p> :
                       <div style={{ width: 200, height: 200 }}>
                         <Lottie animationData={animation} loop={true} />
                       </div>
@@ -302,7 +368,7 @@ const Game = () => {
             <div className='flex flex-col md:flex-row items-center gap-2'>
               <div className='flex flex-col gap-4 justify-center items-center bg-gray-600/40 rounded-2xl w-full px-4 py-2'>
                 <div className='flex gap-4 px-4 py-1 rounded-xl bg-black/60'>
-                  <p className=''>Bet |</p><p>Auto</p>
+                  <p className='px-6'>Bet</p>
                 </div>
                 <div className='flex gap-4 justify-center items-center flex-wrap'>
                   <div className='flex flex-col gap-2'>
@@ -323,7 +389,7 @@ const Game = () => {
               </div>
               <div className='flex flex-col gap-4 justify-center items-center bg-gray-600/40 rounded-2xl w-full px-4 py-2'>
                 <div className='flex gap-4 px-4 py-1 rounded-xl bg-black/60'>
-                  <p className=''>Bet |</p><p>Auto</p>
+                  <p className='px-6'>Bet</p>
                 </div>
                 <div className='flex gap-4 justify-center items-center flex-wrap'>
                   <div className='flex flex-col gap-2'>

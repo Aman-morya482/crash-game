@@ -2,12 +2,13 @@ import mongoose from "mongoose";
 import bcrypt from 'bcrypt';
 
 const userSchema = new mongoose.Schema({
-    username:{type:String,required:true},
-    phone:{type:String,required:true,unique:true,},
-    password:{type:String,required:true,},
-    amount:{type:Number,default:0,},
-    expPoint:{type:Number,default:0,},
-},{timestamps:true,});
+    username: { type: String, required: true },
+    phone: { type: String, required: true, unique: true, },
+    password: { type: String, required: true, },
+    amount: { type: Number, default: 100, },
+    expPoint: { type: Number, default: 0, },
+    lastReward:{type:Date, default:null},
+}, { timestamps: true, });
 
 // userSchema.pre('save',async(next)=>{
 //     if(!this.isModified("password")) return next();
@@ -20,4 +21,4 @@ const userSchema = new mongoose.Schema({
 //     return bcrypt.compare(enteredPass, this.password);
 // }
 
-export const User = mongoose.model('User',userSchema);
+export const User = mongoose.model('User', userSchema);

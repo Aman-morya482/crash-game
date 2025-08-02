@@ -1,7 +1,9 @@
 @import "tailwindcss";
 
+
 *{
     box-sizing: border-box;
+    font-family: 'Ubuntu', sans-serif;
 }
 
 .loading{
@@ -16,15 +18,14 @@
     }
 }
 
-/* Target the scrollable container */
+
 .bet-history {
-  scrollbar-width: thin;           /* Firefox */
-  scrollbar-color: rgb(0, 0, 0) rgb(100, 100, 100);  /* Firefox */
+  scrollbar-width: thin; 
+  scrollbar-color: rgb(0, 0, 0) rgb(100, 100, 100);
 }
 
-/* For Webkit (Chrome, Edge, Safari) */
 .bet-history::-webkit-scrollbar {
-  width: 4px; /* Narrower scrollbar */
+  width: 4px;
 }
 
 .bet-history::-webkit-scrollbar-track {
@@ -34,4 +35,29 @@
 .bet-history::-webkit-scrollbar-thumb {
   background-color: rgb(171, 22, 22); /* Scrollbar color */
   border-radius: 10px;
+}
+
+
+.dot-animation::after {
+  content: '';
+  animation: dots 1.5s steps(3, end) infinite;
+}
+
+@keyframes dots {
+  0%   { content: ''; }
+  33%  { content: '.'; }
+  66%  { content: '..'; }
+  100% { content: '...'; }
+}
+
+.Toastify__toast{
+  max-width: 70vw;
+  font-size: 14px;
+  border-radius: 8px;
+}
+@media (min-width: 768px) {
+  .Toastify__toast {
+    max-width: 400px;
+    font-size: 16px;
+  }
 }

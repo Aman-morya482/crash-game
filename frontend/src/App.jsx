@@ -1,9 +1,10 @@
 import "./App.css"
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom"
 import AppLayout from "./Components/AppLayout"
-import Profile from "./pages/Profile"
+import Profile from "./Pages/Profile"
 import Game from "./Pages/Game"
 import Home from "./Pages/Home"
+import Rewards from "./Pages/Rewards"
 import Login from "./Pages/Login"
 import Signup from "./Pages/Signup"
 
@@ -14,10 +15,11 @@ const App = () => {
         <Routes>
           <Route path="/" element={<AppLayout />}>
             <Route index element={<Home />} />
+            <Route path="rewards" element={<Rewards />} />
             <Route path="profile" element={<Profile />} />
           </Route>
 
-            <Route path="game" element={<Game />} />
+          <Route path="game" element={<Game />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
         </Routes>

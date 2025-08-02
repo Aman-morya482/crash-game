@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const initialState = {amount : 0,};
+const initialState = {amount : 100,};
 
 const gameSlice = createSlice({
     name:'game',

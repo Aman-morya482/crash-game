@@ -1,14 +1,16 @@
 import express from 'express';
 import cors from 'cors';
 import http from 'http';
-import { WebSocketServer,WebSocket } from 'ws';
+import { WebSocketServer, WebSocket } from 'ws';
 import dotenv from 'dotenv';
 
 import { connectDB } from './config/db.js';
 import { gameLoop } from './controllers/gameLoop.js';
 import crashRoutes from './routes/gameRoutes.js';
-// import loginRoutes from './routes/loginRoutes.js'
 import authRoutes from './routes/auth.js'
+import betRoutes from './routes/betRoutes.js'
+import updateAmountRoutes from './routes/amountRoute.js'
+
 
 const app = express();
 app.use(cors());
@@ -17,8 +19,10 @@ app.use(express.json());
 dotenv.config();
 connectDB();
 
-app.use('/api',crashRoutes);
-app.use('/api',authRoutes);
+app.use('/api', crashRoutes);
+app.use('/api', authRoutes);
+app.use('/api', betRoutes);
+app.use('/api',updateAmountRoutes);
 
 const server = http.createServer(app);
 const wss = new WebSocketServer({ server });
