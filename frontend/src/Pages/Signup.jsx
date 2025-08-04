@@ -27,7 +27,7 @@ const Signup = () => {
         if (!username || !phone || !password || !confirm) return toast.info("All fields required");
         if (formData.password !== formData.confirm) return toast.info("Both password should match");
         try {
-            const res = await fetch('http://localhost:8080/api/signup', {
+            const res = await fetch('https://crash-game-tpn6.onrender.com/api/signup', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData)

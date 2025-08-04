@@ -13,8 +13,11 @@ import updateAmountRoutes from './routes/amountRoute.js'
 
 
 const app = express();
-app.use(cors());
-app.use(express.json());
+app.use(cors({
+  origin: "https://your-frontend.vercel.app",
+  methods: ["GET", "POST", "PUT"],
+  credentials: true
+})); app.use(express.json());
 
 dotenv.config();
 connectDB();

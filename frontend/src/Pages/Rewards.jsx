@@ -16,7 +16,7 @@ const Rewards = () => {
     const fetchBets = async () => {
         const token = localStorage.getItem("token");
         try {
-            const res = await fetch('http://localhost:8080/api/myBets', {
+            const res = await fetch('https://crash-game-tpn6.onrender.com/api/myBets', {
                 method: "GET",
                 headers: {
                     'Content-Type': 'application/json',
@@ -110,28 +110,6 @@ const Rewards = () => {
         setRewards(prev => ({ ...prev, ...updated }));
     }, [stats]);
 
-
-
-
-    // const handlereward = async () => {
-    //     const res = await fetch('http://localhost:8080/api/rewards', {
-    //         method: "POST",
-    //         headers: {
-    //             'Content-Type': "application/json",
-    //             Authorization: `Bearer ${token}`,
-    //         }
-    //     })
-    //     if (res.status == 400) {
-    //         toast.info("Reward already claimed")
-    //         const data = await res.json();
-    //     } else {
-    //         toast.info("Reward claimed");
-    //     }
-    // }
-
-    // useEffect(() => {
-    //     fetchBets();
-    // }, []);
 
     const getReward = (newAmount) => {
         user.amount += newAmount;

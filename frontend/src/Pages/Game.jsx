@@ -16,7 +16,7 @@ import Lottie from "lottie-react"
 import { addExp, decExp } from '../features/game/userSlice';
 
 const Game = () => {
-  
+
   const navigate = useNavigate();
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
@@ -65,7 +65,7 @@ const Game = () => {
 
   async function fetchCrashPoints() {
     try {
-      const res = await fetch('http://localhost:8080/api/crash-history', {
+      const res = await fetch('https://crash-game-tpn6.onrender.com/api/crash-history', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'
@@ -95,7 +95,7 @@ const Game = () => {
   }, [playedBet2])
 
   useEffect(() => {
-    socketRef.current = new WebSocket('ws://localhost:8080');
+    socketRef.current = new WebSocket('ws://crash-game-tpn6.onrender.com');
     socketRef.current.onerror = (error) => { console.log("ws", error) }
 
     socketRef.current.onopen = () => {
@@ -133,7 +133,7 @@ const Game = () => {
           updateCrashInDB(betRef2.current, data.multiplier, profit)
           setBetArray(pre => [{ bet: betRef2.current, multiplier: data.multiplier, profit }, ...pre]);
         }
-        if((playedBetRef.current && !outCash) || (playedBetRef2.current && !outCash2)){
+        if ((playedBetRef.current && !outCash) || (playedBetRef2.current && !outCash2)) {
           toast.error("Crashed")
         }
         setStatus(3)
@@ -299,7 +299,7 @@ const Game = () => {
               <ul className='px-1 flex flex-col gap-1 py-1'>
                 <li className='py-1 capitalize flex justify-between items-center'><p className='px-2 text-blue-500'>{user.username}</p><p className='text-sm px-2 bg-yellow-500 rounded-full'>XP {user.expPoint}</p></li>
                 <li onClick={() => { setMenuOpen(false); setBetOpen(true) }} className='pr-20 py-1 hover:bg-gray-700 cursor-pointer'><p className='px-2'>My bets</p></li>
-                <li onClick={()=>{toast.info("Introducing soon")}} className='pr-20 py-1 hover:bg-gray-700 cursor-pointer'><p className='px-2'>Sound</p></li>
+                <li onClick={() => { toast.info("Introducing soon") }} className='pr-20 py-1 hover:bg-gray-700 cursor-pointer'><p className='px-2'>Sound</p></li>
                 <li onClick={() => { navigate("/") }} className='pr-20 py-1 hover:bg-gray-700 cursor-pointer text-red-500'><p className='px-2'>Exit</p></li>
               </ul>
             </div>

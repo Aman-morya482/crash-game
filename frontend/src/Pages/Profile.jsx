@@ -18,7 +18,7 @@ const Profile = () => {
       const fetchBets = async()=>{
           const token = localStorage.getItem("token");
           try{
-              const res = await fetch('http://localhost:8080/api/myBets' , {
+            const res = await fetch('https://crash-game-tpn6.onrender.com/api/myBets' , {
                   method:"GET",
                   headers:{
                       'Content-Type': 'application/json',
