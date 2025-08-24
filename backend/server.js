@@ -11,15 +11,16 @@ import authRoutes from './routes/auth.js'
 import betRoutes from './routes/betRoutes.js'
 import updateAmountRoutes from './routes/amountRoute.js'
 
+dotenv.config();
 
 const app = express();
 app.use(cors({
-  origin: "https://your-frontend.vercel.app",
+  origin: "http://localhost:5173",
   methods: ["GET", "POST", "PUT"],
   credentials: true
-})); app.use(express.json());
+})); 
+app.use(express.json());
 
-dotenv.config();
 connectDB();
 
 app.use('/api', crashRoutes);
@@ -29,14 +30,12 @@ app.use('/api',updateAmountRoutes);
 
 const server = http.createServer(app);
 const wss = new WebSocketServer({ server });
-const PORT = 8080;
 
 const clients = new Set();
-
 wss.on('connection', (ws) => {
   console.log('Client connected');
   clients.add(ws);
-
+  
   ws.on('close', () => {
     console.log('Client disconnected');
     clients.delete(ws);
@@ -54,6 +53,7 @@ export function broadcastToClients(data) {
 
 gameLoop();
 
+const PORT = 8080;
 server.listen(PORT, () => {
   console.log(`🚀 Server running on ${PORT}`);
 });

@@ -26,7 +26,7 @@ export default function Login() {
         e.preventDefault();
 
         try {
-            const res = await fetch('https://crash-game-tpn6.onrender.com/api/login', {
+            const res = await fetch('http://localhost:8080/api/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -36,11 +36,11 @@ export default function Login() {
             const data = await res.json();
             if (data.success) {
                 toast.success(data.message);
-                dispatch(setCredentials({user:data.user, token: data.token}));
-                setTimeout(()=>{
+                dispatch(setCredentials({ user: data.user, token: data.token }));
+                setTimeout(() => {
                     navigate('/');
-                },2000);
-            }else{
+                }, 2000);
+            } else {
                 toast.error(data.message);
             }
         } catch (error) {
@@ -87,9 +87,9 @@ export default function Login() {
                     </motion.button>
 
                     <div className="text-right mt-2 text-sm">
-                            Not have account ?  
-                        <a onClick={()=>{navigate("/signup")}} className="text-blue-400 underline px-1 cursor-pointer">
-                            Signup 
+                        Not have account ?
+                        <a onClick={() => { navigate("/signup") }} className="text-blue-400 underline px-1 cursor-pointer">
+                            Signup
                         </a>
                     </div>
                 </form>

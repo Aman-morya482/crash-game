@@ -16,7 +16,7 @@ const Rewards = () => {
     const fetchBets = async () => {
         const token = localStorage.getItem("token");
         try {
-            const res = await fetch('https://crash-game-tpn6.onrender.com/api/myBets', {
+            const res = await fetch('http://localhost:8080/api/myBets', {
                 method: "GET",
                 headers: {
                     'Content-Type': 'application/json',
@@ -160,7 +160,7 @@ const Rewards = () => {
                 <div className='flex flex-col gap-6 px-4 py-4 mt-2'>
                     <div className='flex justify-between items-center w-full'>
                         <p>Daily Login</p>
-                        <button disabled={rewards.login.claimed} onClick={() => claimLogin()} className={`px-6 py-1 font-bold rounded-full ${rewards.login.claimed ? "bg-gray-400" : "bg-yellow-400"}`}>₹ 20</button>
+                        <button disabled={rewards.login.claimed} onClick={() => claimLogin()} className={`px-6 py-1 cursor-pointer font-bold rounded-full ${rewards.login.claimed ? "bg-gray-400" : "bg-yellow-400"}`}>₹ 20</button>
                     </div>
                 </div>
             </div>
@@ -169,19 +169,19 @@ const Rewards = () => {
                 <div className='flex flex-col gap-6 px-4 py-4 mt-2'>
                     <div className='flex justify-between items-center w-full'>
                         <p>Bet ₹100</p>
-                        <button disabled={rewards.bet_100.claimed} onClick={() => { claimReward("bet_100", 20) }} className={`px-6 py-1 font-bold rounded-full ${rewards.bet_100.achieved && !rewards.bet_100.claimed ? "bg-yellow-400" : "bg-gray-400"}`}>₹ 20</button>
+                        <button disabled={rewards.bet_100.claimed} onClick={() => { claimReward("bet_100", 20) }} className={`px-6 cursor-pointer py-1 font-bold rounded-full ${rewards.bet_100.achieved && !rewards.bet_100.claimed ? "bg-yellow-400" : "bg-gray-400"}`}>₹ 20</button>
                     </div>
                     <div className='flex justify-between w-full'>
                         <p>Bet ₹200</p>
-                        <button disabled={rewards.bet_200.claimed} onClick={() => { claimReward("bet_200", 30) }} className={`px-6 py-1 font-bold rounded-full ${rewards.bet_200.achieved && !rewards.bet_200.claimed ? "bg-yellow-400" : "bg-gray-400"}`}>₹ 30</button>
+                        <button disabled={rewards.bet_200.claimed} onClick={() => { claimReward("bet_200", 30) }} className={`px-6 py-1 font-bold cursor-pointer rounded-full ${rewards.bet_200.achieved && !rewards.bet_200.claimed ? "bg-yellow-400" : "bg-gray-400"}`}>₹ 30</button>
                     </div>
                     <div className='flex justify-between w-full'>
                         <p>Bet ₹500</p>
-                        <button disabled={rewards.bet_500.claimed} onClick={() => { claimReward("bet_500", 100) }} className={`px-6 py-1 font-bold rounded-full ${rewards.bet_500.achieved && !rewards.bet_500.claimed ? "bg-yellow-400" : "bg-gray-400"}`}>₹ 100</button>
+                        <button disabled={rewards.bet_500.claimed} onClick={() => { claimReward("bet_500", 100) }} className={`px-6 py-1 cursor-pointer font-bold rounded-full ${rewards.bet_500.achieved && !rewards.bet_500.claimed ? "bg-yellow-400" : "bg-gray-400"}`}>₹ 100</button>
                     </div>
                     <div className='flex justify-between w-full'>
                         <p>Bet ₹1000</p>
-                        <button disabled={rewards.bet_1000.claimed} onClick={() => { claimReward("bet_1000", 200) }} className={`px-6 py-1 font-bold rounded-full ${rewards.bet_1000.achieved && !rewards.bet_1000.claimed ? "bg-yellow-400" : "bg-gray-400"}`}>₹ 200</button>
+                        <button disabled={rewards.bet_1000.claimed} onClick={() => { claimReward("bet_1000", 200) }} className={`px-6 py-1 font-bold cursor-pointer rounded-full ${rewards.bet_1000.achieved && !rewards.bet_1000.claimed ? "bg-yellow-400" : "bg-gray-400"}`}>₹ 200</button>
                     </div>
                 </div>
             </div>
@@ -191,15 +191,15 @@ const Rewards = () => {
                 <div className='flex flex-col gap-6 px-4 py-4 mt-2'>
                     <div className='flex justify-between items-center w-full'>
                         <p>Cashout at 5x</p>
-                        <button disabled={rewards.cashout_5x.claimed} onClick={() => { claimReward("cashout_5x", 20) }} className={`px-6 py-1 font-bold rounded-full ${rewards.cashout_5x.achieved && !rewards.cashout_5x.claimed ? "bg-yellow-400" : "bg-gray-400"}`}>₹ 20</button>
+                        <button disabled={rewards.cashout_5x.claimed} onClick={() => { claimReward("cashout_5x", 20) }} className={`px-6 py-1 font-bold cursor-pointer rounded-full ${rewards.cashout_5x.achieved && !rewards.cashout_5x.claimed ? "bg-yellow-400" : "bg-gray-400"}`}>₹ 20</button>
                     </div>
                     <div className='flex justify-between w-full'>
                         <p>Cashout at 10x</p>
-                        <button disabled={rewards.cashout_10x.claimed} onClick={() => { claimReward("cashout_10x", 50) }} className={`px-6 py-1 font-bold rounded-full ${rewards.cashout_10x.achieved && !rewards.cashout_10x.claimed ? "bg-yellow-400" : "bg-gray-400"}`}>₹ 50</button>
+                        <button disabled={rewards.cashout_10x.claimed} onClick={() => { claimReward("cashout_10x", 50) }} className={`px-6 py-1 font-bold rounded-full cursor-pointer ${rewards.cashout_10x.achieved && !rewards.cashout_10x.claimed ? "bg-yellow-400" : "bg-gray-400"}`}>₹ 50</button>
                     </div>
                     <div className='flex justify-between w-full'>
                         <p>Cashout at 20x</p>
-                        <button disabled={rewards.cashout_20x.claimed} onClick={() => { claimReward("cashout_20x", 100) }} className={`px-6 py-1 font-bold rounded-full ${rewards.cashout_20x.achieved && !rewards.cashout_20x.claimed ? "bg-yellow-400" : "bg-gray-400"}`}>₹ 100</button>
+                        <button disabled={rewards.cashout_20x.claimed} onClick={() => { claimReward("cashout_20x", 100) }} className={`px-6 py-1 font-bold rounded-full cursor-pointer ${rewards.cashout_20x.achieved && !rewards.cashout_20x.claimed ? "bg-yellow-400" : "bg-gray-400"}`}>₹ 100</button>
                     </div>
                 </div>
             </div>
@@ -208,23 +208,23 @@ const Rewards = () => {
                 <div className='flex flex-col gap-6 px-4 py-4 mt-2'>
                     <div className='flex justify-between items-center w-full'>
                         <p>Played bet 1 time</p>
-                        <button disabled={rewards.played_1.claimed} onClick={() => { claimReward("played_1", 20) }} className={`px-6 py-1 font-bold rounded-full ${rewards.played_1.achieved && !rewards.played_1.claimed ? "bg-yellow-400" : "bg-gray-400"}`}>₹ 20</button>
+                        <button disabled={rewards.played_1.claimed} onClick={() => { claimReward("played_1", 20) }} className={`px-6 py-1 font-bold rounded-full cursor-pointer ${rewards.played_1.achieved && !rewards.played_1.claimed ? "bg-yellow-400" : "bg-gray-400"}`}>₹ 20</button>
                     </div>
                     <div className='flex justify-between w-full'>
                         <p>Played bets 10 times</p>
-                        <button disabled={rewards.played_10.claimed} onClick={() => { claimReward("played_10",30) }} className={`px-6 py-1 font-bold rounded-full ${rewards.played_10.achieved && !rewards.played_10.claimed ? "bg-yellow-400" : "bg-gray-400"}`}>₹ 30</button>
+                        <button disabled={rewards.played_10.claimed} onClick={() => { claimReward("played_10", 30) }} className={`px-6 py-1 font-bold rounded-full cursor-pointer ${rewards.played_10.achieved && !rewards.played_10.claimed ? "bg-yellow-400" : "bg-gray-400"}`}>₹ 30</button>
                     </div>
                     <div className='flex justify-between w-full'>
                         <p>Played bets 20 times</p>
-                        <button disabled={rewards.played_20.claimed} onClick={() => { claimReward("played_20", 50) }} className={`px-6 py-1 font-bold rounded-full ${rewards.played_20.achieved && !rewards.played_20.claimed ? "bg-yellow-400" : "bg-gray-400"}`}>₹ 50</button>
+                        <button disabled={rewards.played_20.claimed} onClick={() => { claimReward("played_20", 50) }} className={`px-6 py-1 font-bold rounded-full cursor-pointer  ${rewards.played_20.achieved && !rewards.played_20.claimed ? "bg-yellow-400" : "bg-gray-400"}`}>₹ 50</button>
                     </div>
                     <div className='flex justify-between w-full'>
                         <p>Total Winnings ₹500</p>
-                        <button disabled={rewards.win_500.claimed} onClick={() => { claimReward("win_500", 20) }} className={`px-6 py-1 font-bold rounded-full ${rewards.win_500.achieved && !rewards.win_500.claimed ? "bg-yellow-400" : "bg-gray-400"}`}>₹ 20</button>
+                        <button disabled={rewards.win_500.claimed} onClick={() => { claimReward("win_500", 20) }} className={`px-6 py-1 font-bold rounded-full  cursor-pointer ${rewards.win_500.achieved && !rewards.win_500.claimed ? "bg-yellow-400" : "bg-gray-400"}`}>₹ 20</button>
                     </div>
                     <div className='flex justify-between w-full'>
                         <p>Total Winnings ₹1000</p>
-                        <button disabled={rewards.win_1000.claimed} onClick={() => { claimReward("win_1000", 50) }} className={`px-6 py-1 font-bold rounded-full ${rewards.win_1000.achieved && !rewards.win_1000.claimed ? "bg-yellow-400" : "bg-gray-400"}`}>₹ 50</button>
+                        <button disabled={rewards.win_1000.claimed} onClick={() => { claimReward("win_1000", 50) }} className={`px-6 py-1 font-bold rounded-full  cursor-pointer ${rewards.win_1000.achieved && !rewards.win_1000.claimed ? "bg-yellow-400" : "bg-gray-400"}`}>₹ 50</button>
                     </div>
                 </div>
             </div>

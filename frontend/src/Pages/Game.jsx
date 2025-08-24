@@ -2,10 +2,10 @@ import React, { useEffect, useRef, useState } from 'react'
 import '../App.css'
 import { useNavigate } from 'react-router-dom';
 
-import { incrementAmount, decrementAmount } from '../features/game/gameSlice';
+import { incrementAmount, decrementAmount } from '../features/game/userSlice.js';
 import { useDispatch, useSelector } from 'react-redux';
-import { updateAmountInDB } from '../utils/AmountInDB';
-import { updateExpInDB } from '../utils/AmountInDB';
+import { updateAmountInDB } from '../utils/AmountInDB.js';
+import { updateExpInDB } from '../utils/AmountInDB.js';
 import { updateCrashInDB } from '../utils/CrashInDB.js';
 
 import { BetHistory } from '../Components/BetHistory';
@@ -13,7 +13,7 @@ import { BetHistory } from '../Components/BetHistory';
 import { IoIosRemove, IoIosArrowDown, IoIosAdd, IoIosMenu } from "react-icons/io";
 import { toast } from "react-toastify";
 import Lottie from "lottie-react"
-import { addExp, decExp } from '../features/game/userSlice';
+import { addExp, decExp } from '../features/game/userSlice.js';
 
 const Game = () => {
 
@@ -65,7 +65,7 @@ const Game = () => {
 
   async function fetchCrashPoints() {
     try {
-      const res = await fetch('https://crash-game-tpn6.onrender.com/api/crash-history', {
+      const res = await fetch('http://localhost:8080/api/crash-history', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'
@@ -95,7 +95,7 @@ const Game = () => {
   }, [playedBet2])
 
   useEffect(() => {
-    socketRef.current = new WebSocket('ws://crash-game-tpn6.onrender.com');
+    socketRef.current = new WebSocket('ws://localhost:8080');
     socketRef.current.onerror = (error) => { console.log("ws", error) }
 
     socketRef.current.onopen = () => {

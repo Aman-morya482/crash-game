@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
-import {motion} from 'framer-motion'
+import { motion } from 'framer-motion'
 
 const Signup = () => {
 
@@ -27,7 +27,7 @@ const Signup = () => {
         if (!username || !phone || !password || !confirm) return toast.info("All fields required");
         if (formData.password !== formData.confirm) return toast.info("Both password should match");
         try {
-            const res = await fetch('https://crash-game-tpn6.onrender.com/api/signup', {
+            const res = await fetch('http://localhost:8080/api/signup', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData)
@@ -46,11 +46,11 @@ const Signup = () => {
 
     return (
         <div
-        className="min-h-screen bg-gray-900 flex items-center justify-center px-4">
+            className="min-h-screen bg-gray-900 flex items-center justify-center px-4">
             < motion.form
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.4 }}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.4 }}
                 onSubmit={handleSubmit}
                 className="bg-gray-800 p-8 rounded-2xl shadow-lg w-full max-w-md animate-fadeIn"
             >
